@@ -16,7 +16,7 @@ Vous devez :
     9. Créer un pipeline pour compiler et valider le déploiement.
     10. Créer un pipeline de déploiement pour déployer le tout dans Azure.
     11. Commenter le code, les pipelines, et les fichiers de configuration pour expliquer ce que chaque section exécute.
-
+ 
 À remettre :
     1. Liens vers les projets Azure DevOps et GitHub.
     2. Captures d’écran du Board montrant les tâches effectuées par chaque membre et les commits.
