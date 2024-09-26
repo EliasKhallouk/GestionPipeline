@@ -3,7 +3,7 @@ Devoir 1
 En équipe de 4 personnes ou moins. (Vous pouvez être seul, mais les barèmes de correction ne changeront pas).
 
 Date de remise : 2 novembre 2024 à 16:54
-
+ 
 Vous devez :
     1. Créer un projet Azure DevOps et y ajouter votre équipe ainsi que moi-même : grouthi@uqac.ca
     2. Créer un projet GitHub public et y ajouter votre équipe ainsi que moi-même : grouthi@uqac.ca ( Faite attention pour ne pas sauvegarder aucun Secret dans ce repo )
