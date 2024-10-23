@@ -13,7 +13,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Sync Azure Repos
+      - name: Sync with Azure Repos
+        env:
+          AZURE_REPO_URL: ${{ secrets.AZURE_REPO_URL }}
+          AZURE_REPO_USERNAME: ${{ secrets.AZURE_REPO_USERNAME }}
+          AZURE_REPO_PASSWORD: ${{ secrets.AZURE_REPO_PASSWORD }}
         run: |
-          # Commandes pour synchroniser avec Azure Repos
-          echo "Synchronisation avec Azure Repos"
+          git remote add azure https://$AZURE_REPO_USERNAME:$AZURE_REPO_PASSWORD@$AZURE_REPO_URL
+          git push azure main --force
