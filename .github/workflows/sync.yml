@@ -1,0 +1,19 @@
+name: Sync Azure Repos
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Sync Azure Repos
+        run: |
+          # Commandes pour synchroniser avec Azure Repos
+          echo "Synchronisation avec Azure Repos"
