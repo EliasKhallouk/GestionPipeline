@@ -56,6 +56,15 @@
         "keySource": {
             "value": "Microsoft.Storage"
         },
+        "adminUsername": {
+            "value": "vmadmin"
+        },
+        "adminPassword": {
+            "value": null
+        },
+        "customData": {
+            "value": null
+        },
         "encryptionEnabled": {
             "value": true
         },

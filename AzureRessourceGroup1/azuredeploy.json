@@ -20,6 +20,15 @@
         "supportsHttpsTrafficOnly": {
             "type": "Bool"
         },
+        "adminUsername": {
+            "type": "String"
+        },
+        "adminPassword": {
+            "type": "SecureString"
+        },
+        "customData": {
+            "type": "String"
+        },
         "allowBlobPublicAccess": {
             "type": "Bool"
         },
