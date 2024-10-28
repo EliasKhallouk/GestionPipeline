@@ -163,6 +163,10 @@
         },
         "autoRepairsAction": {
             "type": "string"
+        },
+        "vaults_keyvaultprojet_name": {
+            "defaultValue": "keyvaultprojet",
+            "type": "String"
         }
     },
     "variables": {
@@ -560,6 +564,60 @@
             "sku": {
                 "name": "[parameters('instanceSize')]",
                 "capacity": "[int(parameters('instanceCount'))]"
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults",
+            "apiVersion": "2024-04-01-preview",
+            "name": "[parameters('vaults_keyvaultprojet_name')]",
+            "location": "eastus",
+            "properties": {
+                "sku": {
+                    "family": "A",
+                    "name": "Standard"
+                },
+                "tenantId": "b078db38-a9bc-4a05-808b-d5de0db76cb7",
+                "accessPolicies": [],
+                "enabledForDeployment": true,
+                "enabledForDiskEncryption": false,
+                "enabledForTemplateDeployment": true,
+                "enableSoftDelete": true,
+                "softDeleteRetentionInDays": 90,
+                "enableRbacAuthorization": true,
+                "vaultUri": "[concat('https://', parameters('vaults_keyvaultprojet_name'), '.vault.azure.net/')]",
+                "provisioningState": "Succeeded",
+                "publicNetworkAccess": "Enabled"
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/keys",
+            "apiVersion": "2024-04-01-preview",
+            "name": "[concat(parameters('vaults_keyvaultprojet_name'), '/SSHKeyAdminVM')]",
+            "location": "eastus",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_keyvaultprojet_name'))]"
+            ],
+            "properties": {
+                "attributes": {
+                    "enabled": true,
+                    "nbf": 1730044288,
+                    "exportable": false
+                }
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "apiVersion": "2024-04-01-preview",
+            "name": "[concat(parameters('vaults_keyvaultprojet_name'), '/vmadmin')]",
+            "location": "eastus",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_keyvaultprojet_name'))]"
+            ],
+            "properties": {
+                "attributes": {
+                    "enabled": true,
+                    "nbf": 1730043687
+                }
             }
         }
     ],
