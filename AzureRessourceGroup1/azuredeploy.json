@@ -167,6 +167,9 @@
         "vaults_keyvaultprojet_name": {
             "defaultValue": "keyvaultprojet",
             "type": "String"
+        },
+        "Secret": {
+            "type": "SecureString"
         }
     },
     "variables": {
@@ -617,7 +620,8 @@
                 "attributes": {
                     "enabled": true,
                     "nbf": 1730043687
-                }
+                },
+                "value": "[parameters('Secret')]"
             }
         }
     ],
