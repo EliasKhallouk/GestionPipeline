@@ -219,8 +219,9 @@
         "vaults_keyvaultprojet_name": {
             "value": null
         },
-        "Secret" : {
-            "value": null
+        "Secret": {
+            "type": "string",
+            "defaultValue": ""
         }
     }
 }
