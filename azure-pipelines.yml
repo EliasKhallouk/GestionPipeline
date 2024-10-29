@@ -38,3 +38,10 @@ steps:
     csmParametersFile: '$(System.DefaultWorkingDirectory)/AzureRessourceGroup1/azuredeploy.parameters.json'
     overrideParameters: '-customData $(CloudInitContent) -adminPassword $(AdminPass)'
     deploymentMode: 'Incremental'
+
+- task: AzureKeyVault@2
+  inputs:
+    azureSubscription: 'Azure subscription 1(6647af1e-e70d-4721-b7ba-14fc82f634f7)'
+    KeyVaultName: 'keyvaultprojet'
+    SecretsFilter: '*'
+    RunAsPreJob: false
