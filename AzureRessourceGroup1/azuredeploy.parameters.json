@@ -218,9 +218,6 @@
         },
         "vaults_keyvaultprojet_name": {
             "value": null
-        },
-        "Secret" : {
-            "value": null
         }
     }
 }

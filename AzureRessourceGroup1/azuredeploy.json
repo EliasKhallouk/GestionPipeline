@@ -167,9 +167,6 @@
         "vaults_keyvaultprojet_name": {
             "defaultValue": "keyvaultprojet",
             "type": "String"
-        },
-        "Secret": {
-            "type": "SecureString"
         }
     },
     "variables": {
@@ -621,7 +618,7 @@
                     "enabled": true,
                     "nbf": 1730043687
                 },
-                "value": "[parameters('Secret')]"
+                "value": "[parameters('adminPassword')]"
             }
         }
     ],
