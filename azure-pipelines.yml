@@ -24,7 +24,12 @@ steps:
 
 - script: |
     echo $(CloudInitContent)
-
+- task: AzureKeyVault@2
+  inputs:
+    azureSubscription: 'Azure subscription 1(6647af1e-e70d-4721-b7ba-14fc82f634f7)'
+    KeyVaultName: 'keyvaultprojet'
+    SecretsFilter: '*'
+    RunAsPreJob: false
 - task: AzureResourceManagerTemplateDeployment@3
   inputs:
     deploymentScope: 'Resource Group'
@@ -39,9 +44,3 @@ steps:
     overrideParameters: '-customData $(CloudInitContent) -adminPassword $(AdminPass)'
     deploymentMode: 'Incremental'
 
-- task: AzureKeyVault@2
-  inputs:
-    azureSubscription: 'Azure subscription 1(6647af1e-e70d-4721-b7ba-14fc82f634f7)'
-    KeyVaultName: 'keyvaultprojet'
-    SecretsFilter: '*'
-    RunAsPreJob: false
