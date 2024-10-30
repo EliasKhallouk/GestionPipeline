@@ -1,55 +1,45 @@
-# ASP.NET Core (.NET Framework)
-# Build and test ASP.NET Core projects targeting the full .NET Framework.
-# Add steps that publish symbols, save build artifacts, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
 
 trigger:
 - master
 
-pool:
-  name: default
-  vmImage: 'windows-latest'
+pool: "default"
 
 variables:
-  solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
-  buildConfiguration: 'Release'
-  environment: Development
+- name: CloudInitContent
 
 steps:
-- task: NuGetToolInstaller@1
-
-- task: NuGetCommand@2
+- task: PowerShell@2
   inputs:
-    restoreSolution: '$(solution)'
+    targetType: 'inline'
+    script: |
+      $CloudContent = Get-Content -Path .\AzureRessourceGroup1\Cloud-init.txt -Raw
+      Write-Host $CloudContent
+      $encodedContent = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($CloudContent))
+      Write-Host $encodedContent
+      Write-Host "##vso[task.setvariable variable=CloudInitContent;]$encodedContent"
 
-- task: VSBuild@1
+- script: |
+    echo $(CloudInitContent)
+- task: AzureKeyVault@2
   inputs:
-    solution: '$(solution)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\Math.zip"'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-
-- task: VSTest@3
+    azureSubscription: 'Azure subscription 1(6647af1e-e70d-4721-b7ba-14fc82f634f7)'
+    KeyVaultName: 'keyvaultprojet'
+    SecretsFilter: '*'
+    RunAsPreJob: false
+- task: AzureResourceManagerTemplateDeployment@3
   inputs:
-    testSelector: 'testAssemblies'
-    testAssemblyVer2: |
-      **\*test*.dll
-      !**\*TestAdapter.dll
-      !**\obj\**
-    searchFolder: '$(System.DefaultWorkingDirectory)'
-
-- task: NuGetCommand@2
-  inputs:
-    command: 'pack'
-    packagesToPack: '**/*.csproj'
-    versioningScheme: 'byPrereleaseNumber'
-    majorVersion: '1'
-    minorVersion: '0'
-    patchVersion: '0'
-
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'drop'
-    publishLocation: 'Container'
+    deploymentScope: 'Resource Group'
+    azureResourceManagerConnection: 'Azure subscription 1(e81592a2-5b66-4be5-8e47-eb76c109ccf2)'
+    subscriptionId: 'e81592a2-5b66-4be5-8e47-eb76c109ccf2'
+    action: 'Create Or Update Resource Group'
+    resourceGroupName: 'AzureRessourceGroup1'
+    location: 'East US'
+    templateLocation: 'Linked artifact'
+    csmFile: '$(System.DefaultWorkingDirectory)/AzureRessourceGroup1/azuredeploy.json'
+    csmParametersFile: '$(System.DefaultWorkingDirectory)/AzureRessourceGroup1/azuredeploy.parameters.json'
+    overrideParameters: '-customData $(CloudInitContent) -adminPassword $(AdminPass)'
+    deploymentMode: 'Validation'
