@@ -590,22 +590,6 @@
             }
         },
         {
-            "type": "Microsoft.KeyVault/vaults/keys",
-            "apiVersion": "2024-04-01-preview",
-            "name": "[concat(parameters('vaults_keyvaultprojet_name'), '/SSHKeyAdminVM')]",
-            "location": "eastus",
-            "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_keyvaultprojet_name'))]"
-            ],
-            "properties": {
-                "attributes": {
-                    "enabled": true,
-                    "nbf": 1730044288,
-                    "exportable": false
-                }
-            }
-        },
-        {
             "type": "Microsoft.KeyVault/vaults/secrets",
             "apiVersion": "2024-04-01-preview",
             "name": "[concat(parameters('vaults_keyvaultprojet_name'), '/vmadmin')]",
