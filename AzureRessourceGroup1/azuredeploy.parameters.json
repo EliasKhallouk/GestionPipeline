@@ -5,18 +5,6 @@
         "location": {
             "value": "eastus"
         },
-        "storageAccountName": {
-            "value": "storageguro1"
-        },
-        "accountType": {
-            "value": "Standard_LRS"
-        },
-        "kind": {
-            "value": "StorageV2"
-        },
-        "minimumTlsVersion": {
-            "value": "TLS1_2"
-        },
         "supportsHttpsTrafficOnly": {
             "value": true
         },
