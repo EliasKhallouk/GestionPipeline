@@ -5,44 +5,8 @@
         "location": {
             "value": "eastus"
         },
-        "supportsHttpsTrafficOnly": {
-            "value": true
-        },
-        "allowBlobPublicAccess": {
-            "value": true
-        },
-        "allowSharedKeyAccess": {
-            "value": true
-        },
-        "defaultOAuth": {
-            "value": false
-        },
-        "accessTier": {
-            "value": "Hot"
-        },
         "publicNetworkAccess": {
             "value": "Enabled"
-        },
-        "allowCrossTenantReplication": {
-            "value": false
-        },
-        "networkAclsBypass": {
-            "value": "AzureServices"
-        },
-        "networkAclsDefaultAction": {
-            "value": "Allow"
-        },
-        "networkAclsIpRules": {
-            "value": []
-        },
-        "dnsEndpointType": {
-            "value": "Standard"
-        },
-        "largeFileSharesState": {
-            "value": "Enabled"
-        },
-        "keySource": {
-            "value": "Microsoft.Storage"
         },
         "adminUsername": {
             "value": "vmadmin"
@@ -53,16 +17,7 @@
         "customData": {
             "value": null
         },
-        "encryptionEnabled": {
-            "value": true
-        },
-        "keyTypeForTableAndQueueEncryption": {
-            "value": "Account"
-        },
-        "infrastructureEncryptionEnabled": {
-            "value": false
-        },
-                "osDiskType": {
+        "osDiskType": {
             "value": "StandardSSD_LRS"
         },
         "addressPrefixes": {
@@ -79,9 +34,6 @@
                     }
                 }
             ]
-        },
-        "virtualNetworkId": {
-            "value": "/subscriptions/6647af1e-e70d-4721-b7ba-14fc82f634f7/resourceGroups/ScaleSetRG/providers/Microsoft.Network/virtualNetworks/ScaleSetRG-vnet"
         },
         "virtualNetworkName": {
             "value": "ScaleSetRG-vnet"
@@ -148,9 +100,6 @@
         "InboundNATRuleFrontEndPortRangeStart": {
             "value": 50000
         },
-        "vmName": {
-            "value": "VMss1"
-        },
         "virtualMachineScaleSetName": {
             "value": "VMss1"
         },
@@ -173,9 +122,6 @@
         },
         "upgradePolicy": {
             "value": "Manual"
-        },
-        "hibernationEnabled": {
-            "value": false
         },
         "securityType": {
             "value": "TrustedLaunch"
