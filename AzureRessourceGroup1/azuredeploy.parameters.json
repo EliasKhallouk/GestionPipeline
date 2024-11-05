@@ -42,7 +42,7 @@
             "value": [
                 {
                     "name": "basicNsgScaleSetRG-vnet-nic01",
-                    "id": "/subscriptions/6647af1e-e70d-4721-b7ba-14fc82f634f7/resourceGroups/ScaleSetRG/providers/Microsoft.Network/networkSecurityGroups/basicNsgScaleSetRG-vnet-nic01",
+                    "id": "/subscriptions/e81592a2-5b66-4be5-8e47-eb76c109ccf2/resourceGroups/ScaleSetRG/providers/Microsoft.Network/networkSecurityGroups/basicNsgScaleSetRG-vnet-nic01",
                     "rules": [
                         {
                             "name": "Tcp",
@@ -66,7 +66,7 @@
                 {
                     "name": "ScaleSetRG-vnet-nic01",
                     "primary": true,
-                    "subnetId": "/subscriptions/6647af1e-e70d-4721-b7ba-14fc82f634f7/resourceGroups/ScaleSetRG/providers/Microsoft.Network/virtualNetworks/ScaleSetRG-vnet/subnets/default",
+                    "subnetId": "/subscriptions/e81592a2-5b66-4be5-8e47-eb76c109ccf2/resourceGroups/ScaleSetRG/providers/Microsoft.Network/virtualNetworks/ScaleSetRG-vnet/subnets/default",
                     "applicationGatewayBackendAddressPools": [],
                     "loadBalancerBackendAddressPools": [
                         {
@@ -77,7 +77,7 @@
                     "loadBalancerInboundNatPools": [],
                     "enableAcceleratedNetworking": false,
                     "nsgName": "basicNsgScaleSetRG-vnet-nic01",
-                    "nsgId": "/subscriptions/6647af1e-e70d-4721-b7ba-14fc82f634f7/resourceGroups/ScaleSetRG/providers/Microsoft.Network/networkSecurityGroups/basicNsgScaleSetRG-vnet-nic01",
+                    "nsgId": "/subscriptions/e81592a2-5b66-4be5-8e47-eb76c109ccf2/resourceGroups/ScaleSetRG/providers/Microsoft.Network/networkSecurityGroups/basicNsgScaleSetRG-vnet-nic01",
                     "pipName": "publicIp-ScaleSetRG-vnet-nic01"
                 }
             ]
