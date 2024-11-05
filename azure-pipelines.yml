@@ -42,6 +42,6 @@ steps:
 - task: AzureKeyVault@2
   inputs:
     azureSubscription: 'Azure subscription 1(e81592a2-5b66-4be5-8e47-eb76c109ccf2)'
-    KeyVaultName: 'keyvaultprojet3'
+    KeyVaultName: 'keyvaultprojet4'
     SecretsFilter: '*'
     RunAsPreJob: false
