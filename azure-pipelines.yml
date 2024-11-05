@@ -25,20 +25,20 @@ steps:
 - script: |
     echo $(CloudInitContent)
 
+
 - task: AzureResourceManagerTemplateDeployment@3
   inputs:
     deploymentScope: 'Resource Group'
     azureResourceManagerConnection: 'Azure subscription 1(e81592a2-5b66-4be5-8e47-eb76c109ccf2)'
     subscriptionId: 'e81592a2-5b66-4be5-8e47-eb76c109ccf2'
     action: 'Create Or Update Resource Group'
-    resourceGroupName: 'AzureRessourceGroup1'
+    resourceGroupName: 'ScaleSetRG'
     location: 'East US'
     templateLocation: 'Linked artifact'
     csmFile: '$(System.DefaultWorkingDirectory)/AzureRessourceGroup1/azuredeploy.json'
     csmParametersFile: '$(System.DefaultWorkingDirectory)/AzureRessourceGroup1/azuredeploy.parameters.json'
     overrideParameters: '-customData $(CloudInitContent) -adminPassword $(AdminPass)'
     deploymentMode: 'Incremental'
-
 - task: AzureKeyVault@2
   inputs:
     azureSubscription: 'Azure subscription 1(e81592a2-5b66-4be5-8e47-eb76c109ccf2)'
