@@ -2,8 +2,8 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "vaults_keyvaultprojet4_name": {
-            "defaultValue": "keyvaultprojet4",
+        "vaults_keyvaultprojet5_name": {
+            "defaultValue": "keyvaultprojet5",
             "type": "String"
         },
       "adminPassword": {
@@ -15,7 +15,7 @@
         {
             "type": "Microsoft.KeyVault/vaults",
             "apiVersion": "2024-04-01-preview",
-            "name": "[parameters('vaults_keyvaultprojet4_name')]",
+            "name": "[parameters('vaults_keyvaultprojet5_name')]",
             "location": "eastus",
             "properties": {
                 "sku": {
@@ -30,7 +30,7 @@
                 "enableSoftDelete": true,
                 "softDeleteRetentionInDays": 90,
                 "enableRbacAuthorization": true,
-                "vaultUri": "[concat('https://', parameters('vaults_keyvaultprojet4_name'), '.vault.azure.net/')]",
+                "vaultUri": "[concat('https://', parameters('vaults_keyvaultprojet5_name'), '.vault.azure.net/')]",
                 "provisioningState": "Succeeded",
                 "publicNetworkAccess": "Enabled"
             }
@@ -38,10 +38,10 @@
         {
       "type": "Microsoft.KeyVault/vaults/secrets",
       "apiVersion": "2024-04-01-preview",
-          "name": "[concat(parameters('vaults_keyvaultprojet4_name'), '/AdminPass')]",
+          "name": "[concat(parameters('vaults_keyvaultprojet5_name'), '/AdminPass')]",
       "location": "eastus",
       "dependsOn": [
-        "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_keyvaultprojet4_name'))]"
+        "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_keyvaultprojet5_name'))]"
       ],
       "properties": {
         "contentType": "Administrator Password Use for VM",
