@@ -4,14 +4,15 @@
 # https://aka.ms/yaml
 
 trigger:
-- master
+- master # branche "master"
 
-pool: "default"
+pool: "default" # notre pool d'agents locaux (nous en avons deux)
 
 variables:
-- name: CloudInitContent
+- name: CloudInitContent # variable contenant les scripts de déploiement, vide au départ
 
 steps:
+# script de récupération et de chiffrement du CloudInitContent
 - task: PowerShell@2
   inputs:
     targetType: 'inline'
@@ -22,26 +23,29 @@ steps:
       Write-Host $encodedContent
       Write-Host "##vso[task.setvariable variable=CloudInitContent;]$encodedContent"
 
+# débug : vérification du CloudInitContent par affichage dans les logs
 - script: |
     echo $(CloudInitContent)
 
-
+# déploiement du Resource Group contenant le Linux Scale Set (VMSS)
 - task: AzureResourceManagerTemplateDeployment@3
   inputs:
-    deploymentScope: 'Resource Group'
-    azureResourceManagerConnection: 'Azure subscription 1(e81592a2-5b66-4be5-8e47-eb76c109ccf2)'
-    subscriptionId: 'e81592a2-5b66-4be5-8e47-eb76c109ccf2'
-    action: 'Create Or Update Resource Group'
-    resourceGroupName: 'ScaleSetRG'
-    location: 'East US'
+    deploymentScope: 'Resource Group' # déploiement à l'échelle d'un Resource Group
+    azureResourceManagerConnection: 'Azure subscription 1(e81592a2-5b66-4be5-8e47-eb76c109ccf2)' # l'abonnement Azure d'Elias
+    subscriptionId: 'e81592a2-5b66-4be5-8e47-eb76c109ccf2' # même chose
+    action: 'Create Or Update Resource Group' # "créer ou mettre à jour un Resource Group"
+    resourceGroupName: 'ScaleSetRG' # ce sera le Resource Group du Scale Set
+    location: 'East US' # y avait plus de machines au canada
     templateLocation: 'Linked artifact'
-    csmFile: '$(System.DefaultWorkingDirectory)/AzureRessourceGroup1/azuredeploy.json'
-    csmParametersFile: '$(System.DefaultWorkingDirectory)/AzureRessourceGroup1/azuredeploy.parameters.json'
+    csmFile: '$(System.DefaultWorkingDirectory)/AzureRessourceGroup1/azuredeploy.json' # chemin du template
+    csmParametersFile: '$(System.DefaultWorkingDirectory)/AzureRessourceGroup1/azuredeploy.parameters.json' # chemin des paramètres du template
     overrideParameters: '-customData $(CloudInitContent) -adminPassword $(AdminPass)'
-    deploymentMode: 'Incremental'
+    deploymentMode: 'Incremental' # déploiement incrémental
+
+# déploiement du KeyVault
 - task: AzureKeyVault@2
   inputs:
-    azureSubscription: 'Azure subscription 1(e81592a2-5b66-4be5-8e47-eb76c109ccf2)'
-    KeyVaultName: 'keyvaultprojet5'
-    SecretsFilter: '*'
-    RunAsPreJob: false
+    azureSubscription: 'Azure subscription 1(e81592a2-5b66-4be5-8e47-eb76c109ccf2)' # l'abonnement Azure d'Elias
+    KeyVaultName: 'keyvaultprojet5' # nom du KeyVault
+    SecretsFilter: '*' # prendre tous les secrets
+    RunAsPreJob: false # nos jobs ne dépendent pas du KeyVault
