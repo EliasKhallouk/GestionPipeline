@@ -5,9 +5,6 @@
         "location": {
             "value": "eastus"
         },
-        "publicNetworkAccess": {
-            "value": "Enabled"
-        },
         "adminUsername": {
             "value": "vmadmin"
         },
@@ -149,47 +146,6 @@
         },
         "autoRepairsAction": {
             "value": "Replace"
-        },
-        "vaults_keyvaultprojet_name": {
-            "value": null
-        },
-        "name": {
-            "value": "keyvaultprojet6"
-        },
-        "sku": {
-            "value": "Standard"
-        },
-        "accessPolicies": {
-            "value": []
-        },
-        "tenant": {
-            "value": "228228de-f39d-46a3-90f1-85e41d503cca"
-        },
-        "enabledForDeployment": {
-            "value": true
-        },
-        "enabledForTemplateDeployment": {
-            "value": true
-        },
-        "enabledForDiskEncryption": {
-            "value": false
-        },
-        "enableRbacAuthorization": {
-            "value": true
-        },
-        "enableSoftDelete": {
-            "value": true
-        },
-        "softDeleteRetentionInDays": {
-            "value": 90
-        },
-        "networkAcls": {
-            "value": {
-                "defaultAction": "allow",
-                "bypass": "AzureServices",
-                "ipRules": [],
-                "virtualNetworkRules": []
-            }
         }
     }
 }
