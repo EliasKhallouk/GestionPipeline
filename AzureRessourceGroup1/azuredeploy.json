@@ -96,7 +96,7 @@
             "type": "string"
         },
         "vaults_keyvaultprojet_name": {
-            "defaultValue": "keyvaultprojet5",
+            "defaultValue": "keyvaultprojet6",
             "type": "String"
         },
         "name": {
