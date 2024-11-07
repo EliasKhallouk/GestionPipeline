@@ -1,6 +1,7 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
+    // Définition du schéma des paramètres pour azuredeploy.parameters.json
     "parameters": {
         "location": {
             "type": "String"
@@ -136,16 +137,16 @@
             "type": "Object"
         }
     },
+    // variables utilisées plus loin
     "variables": {
         "networkApiVersion": "2020-11-01",
         "virtualMachineScaleSetApiVersion": "2023-09-01",
         "namingInfix": "[toLower(substring(concat(parameters('virtualMachineScaleSetName'), uniqueString(resourceGroup().id)), 0, 9))]",
         "autoScaleResourceName": "[concat(substring(parameters('virtualMachineScaleSetName'), 0, min(length(parameters('virtualMachineScaleSetName')), 55)), 'autoscale')]",
         "vmssId": "[resourceId('Microsoft.Compute/virtualMachineScaleSets', parameters('virtualMachineScaleSetName'))]"
-    
+
     },
-    "resources": [
-        {
+    "resources": [{ // virtual network partagé par les ressources
             "name": "[parameters('virtualNetworkName')]",
             "type": "Microsoft.Network/virtualNetworks",
             "apiVersion": "2024-01-01",
@@ -157,7 +158,7 @@
                 "subnets": "[parameters('subnets')]"
             }
         },
-        {
+        { // groupe de sécurité
             "name": "[parameters('networkSecurityGroups')[copyIndex()].name]",
             "type": "Microsoft.Network/networkSecurityGroups",
             "apiVersion": "2020-05-01",
@@ -170,7 +171,7 @@
                 "count": "[length(parameters('networkSecurityGroups'))]"
             }
         },
-        {
+        { // IP publiques pour exposer notre serveur HTTP
             "name": "[concat(parameters('loadBalancerName'), '-publicip')]",
             "type": "Microsoft.Network/publicIpAddresses",
             "apiVersion": "2020-08-01",
@@ -185,7 +186,7 @@
             },
             "zones": []
         },
-        {
+        { // load balancer entre nos deux machines
             "name": "[parameters('loadBalancerName')]",
             "type": "Microsoft.Network/loadBalancers",
             "apiVersion": "2021-05-01",
@@ -194,75 +195,65 @@
                 "name": "Standard"
             },
             "properties": {
-                "frontendIPConfigurations": [
-                    {
-                        "name": "[concat(parameters('loadBalancerName'), '-frontendconfig01')]",
-                        "properties": {
-                            "publicIPAddress": {
-                                "id": "[resourceId('Microsoft.Network/publicIpAddresses', concat(parameters('loadBalancerName'), '-publicip'))]"
-                            }
+                "frontendIPConfigurations": [{
+                    "name": "[concat(parameters('loadBalancerName'), '-frontendconfig01')]",
+                    "properties": {
+                        "publicIPAddress": {
+                            "id": "[resourceId('Microsoft.Network/publicIpAddresses', concat(parameters('loadBalancerName'), '-publicip'))]"
                         }
                     }
-                ],
-                "backendAddressPools": [
-                    {
-                        "name": "[parameters('backendPoolName')]"
-                    }
-                ],
-                "loadBalancingRules": [
-                    {
-                        "name": "[concat(parameters('loadBalancerName'), '-lbrule01')]",
-                        "properties": {
-                            "frontendIPConfiguration": {
-                                "id": "[resourceId('Microsoft.Network/loadBalancers/frontendIPConfigurations', parameters('loadBalancerName'), concat(parameters('loadBalancerName'), '-frontendconfig01'))]"
-                            },
-                            "backendAddressPool": {
-                                "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', parameters('loadBalancerName'), parameters('backendPoolName'))]"
-                            },
-                            "frontendPort": "[parameters('loadbalancingRuleFrontEndPort')]",
-                            "backendPort": "[parameters('loadbalancingRuleBackendEndPort')]",
-                            "enableFloatingIP": false,
-                            "idleTimeoutInMinutes": 15,
-                            "disableOutboundSnat": true,
-                            "loadDistribution": "Default",
-                            "protocol": "[parameters('loadbalancingRuleProtocol')]",
-                            "probe": {
-                                "id": "[resourceId('Microsoft.Network/loadBalancers/probes', parameters('loadBalancerName'), concat(parameters('loadBalancerName'), '-probe01'))]"
-                            }
+                }],
+                "backendAddressPools": [{
+                    "name": "[parameters('backendPoolName')]"
+                }],
+                "loadBalancingRules": [{
+                    "name": "[concat(parameters('loadBalancerName'), '-lbrule01')]",
+                    "properties": {
+                        "frontendIPConfiguration": {
+                            "id": "[resourceId('Microsoft.Network/loadBalancers/frontendIPConfigurations', parameters('loadBalancerName'), concat(parameters('loadBalancerName'), '-frontendconfig01'))]"
+                        },
+                        "backendAddressPool": {
+                            "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', parameters('loadBalancerName'), parameters('backendPoolName'))]"
+                        },
+                        "frontendPort": "[parameters('loadbalancingRuleFrontEndPort')]",
+                        "backendPort": "[parameters('loadbalancingRuleBackendEndPort')]",
+                        "enableFloatingIP": false,
+                        "idleTimeoutInMinutes": 15,
+                        "disableOutboundSnat": true,
+                        "loadDistribution": "Default",
+                        "protocol": "[parameters('loadbalancingRuleProtocol')]",
+                        "probe": {
+                            "id": "[resourceId('Microsoft.Network/loadBalancers/probes', parameters('loadBalancerName'), concat(parameters('loadBalancerName'), '-probe01'))]"
                         }
                     }
-                ],
-                "probes": [
-                    {
-                        "name": "[concat(parameters('loadBalancerName'), '-probe01')]",
-                        "properties": {
-                            "intervalInSeconds": 15,
-                            "numberOfProbes": 2,
-                            "requestPath": "[if(equals(parameters('loadbalancingRuleProtocol'),'Tcp'), json('null'), '/')]",
-                            "port": "[if(equals(parameters('loadbalancingRuleProtocol'), 'Tcp'), parameters('loadbalancingRuleBackendEndPort'), '80')]",
-                            "protocol": "[if(equals(parameters('loadbalancingRuleProtocol'),'Tcp'), 'Tcp', 'Http')]"
-                        }
+                }],
+                "probes": [{
+                    "name": "[concat(parameters('loadBalancerName'), '-probe01')]",
+                    "properties": {
+                        "intervalInSeconds": 15,
+                        "numberOfProbes": 2,
+                        "requestPath": "[if(equals(parameters('loadbalancingRuleProtocol'),'Tcp'), json('null'), '/')]",
+                        "port": "[if(equals(parameters('loadbalancingRuleProtocol'), 'Tcp'), parameters('loadbalancingRuleBackendEndPort'), '80')]",
+                        "protocol": "[if(equals(parameters('loadbalancingRuleProtocol'),'Tcp'), 'Tcp', 'Http')]"
                     }
-                ],
-                "inboundNatRules": [
-                    {
-                        "name": "[concat(parameters('loadBalancerName'), '-natRule01')]",
-                        "properties": {
-                            "frontendIPConfiguration": {
-                                "id": "[resourceId('Microsoft.Network/loadBalancers/frontendIPConfigurations', parameters('loadBalancerName'), concat(parameters('loadBalancerName'), '-frontendconfig01'))]"
-                            },
-                            "backendAddressPool": {
-                                "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', parameters('loadBalancerName'), parameters('backendPoolName'))]"
-                            },
-                            "protocol": "TCP",
-                            "enableFloatingIP": false,
-                            "enableTcpReset": false,
-                            "backendPort": 22,
-                            "frontendPortRangeStart": "[parameters('InboundNATRuleFrontEndPortRangeStart')]",
-                            "frontendPortRangeEnd": "[add(parameters('InboundNATRuleFrontEndPortRangeStart'), if(equals(parameters('instanceCount'), json('null')), 0, 3599))]"
-                        }
+                }],
+                "inboundNatRules": [{
+                    "name": "[concat(parameters('loadBalancerName'), '-natRule01')]",
+                    "properties": {
+                        "frontendIPConfiguration": {
+                            "id": "[resourceId('Microsoft.Network/loadBalancers/frontendIPConfigurations', parameters('loadBalancerName'), concat(parameters('loadBalancerName'), '-frontendconfig01'))]"
+                        },
+                        "backendAddressPool": {
+                            "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', parameters('loadBalancerName'), parameters('backendPoolName'))]"
+                        },
+                        "protocol": "TCP",
+                        "enableFloatingIP": false,
+                        "enableTcpReset": false,
+                        "backendPort": 22,
+                        "frontendPortRangeStart": "[parameters('InboundNATRuleFrontEndPortRangeStart')]",
+                        "frontendPortRangeEnd": "[add(parameters('InboundNATRuleFrontEndPortRangeStart'), if(equals(parameters('instanceCount'), json('null')), 0, 3599))]"
                     }
-                ]
+                }]
             },
             "dependsOn": [
                 "[concat('Microsoft.Network/publicIpAddresses/', concat(parameters('loadBalancerName'), '-publicip'))]"
@@ -280,62 +271,59 @@
                 "name": "[variables('autoScaleResourceName')]",
                 "targetResourceUri": "[variables('vmssId')]",
                 "enabled": true,
-                "profiles": [
-                    {
-                        "name": "Default condition",
-                        "capacity": {
-                            "default": 2,
-                            "minimum": 2,
-                            "maximum": 4
-                        },
-                        "rules": [
-                            {
-                                "metricTrigger": {
-                                    "metricName": "Percentage CPU",
-                                    "metricResourceUri": "[variables('vmssId')]",
-                                    "timeGrain": "PT1M",
-                                    "statistic": "Average",
-                                    "timeWindow": "PT5M",
-                                    "timeAggregation": "Average",
-                                    "operator": "GreaterThan",
-                                    "threshold": "50"
-                                },
-                                "scaleAction": {
-                                    "cooldown": "PT5M",
-                                    "direction": "Increase",
-                                    "type": "ChangeCount",
-                                    "value": "1"
-                                }
+                "profiles": [{
+                    "name": "Default condition",
+                    "capacity": {
+                        "default": 2,
+                        "minimum": 2,
+                        "maximum": 4
+                    },
+                    "rules": [{
+                            "metricTrigger": {
+                                "metricName": "Percentage CPU",
+                                "metricResourceUri": "[variables('vmssId')]",
+                                "timeGrain": "PT1M",
+                                "statistic": "Average",
+                                "timeWindow": "PT5M",
+                                "timeAggregation": "Average",
+                                "operator": "GreaterThan",
+                                "threshold": "50"
                             },
-                            {
-                                "metricTrigger": {
-                                    "metricName": "Percentage CPU",
-                                    "metricResourceUri": "[variables('vmssId')]",
-                                    "timeGrain": "PT1M",
-                                    "statistic": "Average",
-                                    "timeWindow": "PT5M",
-                                    "timeAggregation": "Average",
-                                    "operator": "LessThan",
-                                    "threshold": "20"
-                                },
-                                "scaleAction": {
-                                    "cooldown": "PT5M",
-                                    "direction": "Decrease",
-                                    "type": "ChangeCount",
-                                    "value": "1"
-                                }
+                            "scaleAction": {
+                                "cooldown": "PT5M",
+                                "direction": "Increase",
+                                "type": "ChangeCount",
+                                "value": "1"
                             }
-                        ]
-                    }
-                ]
+                        },
+                        {
+                            "metricTrigger": {
+                                "metricName": "Percentage CPU",
+                                "metricResourceUri": "[variables('vmssId')]",
+                                "timeGrain": "PT1M",
+                                "statistic": "Average",
+                                "timeWindow": "PT5M",
+                                "timeAggregation": "Average",
+                                "operator": "LessThan",
+                                "threshold": "20"
+                            },
+                            "scaleAction": {
+                                "cooldown": "PT5M",
+                                "direction": "Decrease",
+                                "type": "ChangeCount",
+                                "value": "1"
+                            }
+                        }
+                    ]
+                }]
             }
         },
-        {
+        { // Configuration du VMSS
             "name": "[parameters('virtualMachineScaleSetName')]",
             "type": "Microsoft.Compute/virtualMachineScaleSets",
             "apiVersion": "[variables('virtualMachineScaleSetApiVersion')]",
             "location": "[parameters('location')]",
-            "dependsOn": [
+            "dependsOn": [ // il ne peut pas être construit sans son groupe de sécurité, son réseau virtuel et son load balancer
                 "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]",
                 "networkSecurityGroups",
                 "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]",
@@ -351,61 +339,55 @@
                                 "storageAccountType": "[parameters('osDiskType')]"
                             }
                         },
-                        "imageReference": {
+                        "imageReference": { // on utilise Ubuntu 24 LTS de Canonical
                             "publisher": "canonical",
                             "offer": "ubuntu-24_04-lts",
                             "sku": "server",
                             "version": "latest"
                         }
                     },
-                    "networkProfile": {
+                    "networkProfile": { // ce fichier de configuration permet de configurer automatiquement les interfaces réseau d'une machine virtuelle pour un ou plusieurs réseau(s) virtuel(s)
                         "networkApiVersion": "[variables('networkApiVersion')]",
-                        "copy": [
-                            {
-                                "name": "networkInterfaceConfigurations",
-                                "count": "[length(parameters('networkInterfaceConfigurations'))]",
-                                "input": {
-                                    "name": "[parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].name]",
-                                    "properties": {
-                                        "primary": "[parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].primary]",
-                                        "enableAcceleratedNetworking": "[parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].enableAcceleratedNetworking]",
-                                        "ipConfigurations": [
-                                            {
-                                                "name": "[concat(take(parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].name, sub(80, length('-defaultIpConfiguration'))), '-defaultIpConfiguration')]",
-                                                "properties": {
-                                                    "subnet": {
-                                                        "id": "[parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].subnetId]"
-                                                    },
-                                                    "primary": "[parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].primary]",
-                                                    "applicationGatewayBackendAddressPools": "[parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].applicationGatewayBackendAddressPools]",
-                                                    "loadBalancerBackendAddressPools": "[parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].loadBalancerBackendAddressPools]",
-                                                    "publicIPAddressConfiguration": "[if( equals( parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].pipName, ''), json('null'), union(json(concat('{\"name\": \"', parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].pipName, '\"}')),json('{\"properties\": { \"idleTimeoutInMinutes\": 15}}')))]"
-                                                }
-                                            }
-                                        ],
-                                        "networkSecurityGroup": "[if( equals( parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].nsgId, ''), json('null'),json(concat('{\"id\": \"', parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].nsgId, '\"}')))]"
-                                    }
+                        "copy": [{
+                            "name": "networkInterfaceConfigurations",
+                            "count": "[length(parameters('networkInterfaceConfigurations'))]",
+                            "input": {
+                                "name": "[parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].name]",
+                                "properties": {
+                                    "primary": "[parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].primary]",
+                                    "enableAcceleratedNetworking": "[parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].enableAcceleratedNetworking]",
+                                    "ipConfigurations": [{
+                                        "name": "[concat(take(parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].name, sub(80, length('-defaultIpConfiguration'))), '-defaultIpConfiguration')]",
+                                        "properties": {
+                                            "subnet": {
+                                                "id": "[parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].subnetId]"
+                                            },
+                                            "primary": "[parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].primary]",
+                                            "applicationGatewayBackendAddressPools": "[parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].applicationGatewayBackendAddressPools]",
+                                            "loadBalancerBackendAddressPools": "[parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].loadBalancerBackendAddressPools]",
+                                            "publicIPAddressConfiguration": "[if( equals( parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].pipName, ''), json('null'), union(json(concat('{\"name\": \"', parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].pipName, '\"}')),json('{\"properties\": { \"idleTimeoutInMinutes\": 15}}')))]"
+                                        }
+                                    }],
+                                    "networkSecurityGroup": "[if( equals( parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].nsgId, ''), json('null'),json(concat('{\"id\": \"', parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].nsgId, '\"}')))]"
                                 }
                             }
-                        ]
+                        }]
                     },
                     "extensionProfile": {
-                        "extensions": [
-                            {
-                                "name": "HealthExtension",
-                                "properties": {
-                                    "publisher": "Microsoft.ManagedServices",
-                                    "type": "ApplicationHealthLinux",
-                                    "typeHandlerVersion": "1.0",
-                                    "autoUpgradeMinorVersion": false,
-                                    "settings": {
-                                        "protocol": "[parameters('healthExtensionProtocol')]",
-                                        "port": "[parameters('healthExtensionPort')]",
-                                        "requestPath": "[parameters('healthExtensionRequestPath')]"
-                                    }
+                        "extensions": [{
+                            "name": "HealthExtension",
+                            "properties": {
+                                "publisher": "Microsoft.ManagedServices",
+                                "type": "ApplicationHealthLinux",
+                                "typeHandlerVersion": "1.0",
+                                "autoUpgradeMinorVersion": false,
+                                "settings": {
+                                    "protocol": "[parameters('healthExtensionProtocol')]",
+                                    "port": "[parameters('healthExtensionPort')]",
+                                    "requestPath": "[parameters('healthExtensionRequestPath')]"
                                 }
                             }
-                        ]
+                        }]
                     },
                     "osProfile": {
                         "computerNamePrefix": "[variables('namingInfix')]",
@@ -447,7 +429,7 @@
                 "capacity": "[int(parameters('instanceCount'))]"
             }
         },
-        {
+        { // la KeyVault
             "type": "Microsoft.KeyVault/vaults",
             "apiVersion": "2023-08-01-preview",
             "name": "[parameters('name')]",
@@ -471,23 +453,24 @@
                 "networkAcls": "[parameters('networkAcls')]"
             }
         },
-        {
+        { // un secret pour la KeyVault
             "type": "Microsoft.KeyVault/vaults/secrets",
             "apiVersion": "2024-04-01-preview",
             "name": "[concat(parameters('name'), '/AdminPass')]",
             "location": "eastus",
-            "dependsOn": [
+            "dependsOn": [ // le secret dépend forcément de sa vault
                 "[resourceId('Microsoft.KeyVault/vaults', parameters('name'))]"
             ],
             "properties": {
-                "contentType": "Administrator Password Use for VM",
+                "contentType": "Administrator Password Use for VM", // description
                 "attributes": {
-                "enabled": true
+                    "enabled": true // actif
                 },
                 "value": "[parameters('adminPassword')]"
             }
         }
     ],
+    // résultat du script, disponible sur le portail Azure DevOps une fois le script terminé
     "outputs": {
         "adminUsername": {
             "type": "string",

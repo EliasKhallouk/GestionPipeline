@@ -3,16 +3,16 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "location": {
-            "value": "eastus"
+            "value": "eastus" // East US (même si c'est au final au Canada)
         },
         "publicNetworkAccess": {
             "value": "Enabled"
         },
         "adminUsername": {
-            "value": "vmadmin"
+            "value": "vmadmin" // username de l'admin des machines virtuelles
         },
         "adminPassword": {
-            "value": null
+            "value": null // pas de mot de passe ici, cette valeur sera écrasée par le secret de la KeyVault
         },
         "customData": {
             "value": null
@@ -22,65 +22,56 @@
         },
         "addressPrefixes": {
             "value": [
-                "10.0.0.0/16"
+                "10.0.0.0/16" // plage d'adresses du réseau virtuel
             ]
         },
-        "subnets": {
-            "value": [
-                {
-                    "name": "default",
-                    "properties": {
-                        "addressPrefix": "10.0.0.0/20"
-                    }
+        "subnets": { // sous-domaines au cas où on veut rajouter des machines en réutilisant le même réseau
+            "value": [{
+                "name": "default",
+                "properties": {
+                    "addressPrefix": "10.0.0.0/20"
                 }
-            ]
+            }]
         },
-        "virtualNetworkName": {
+        "virtualNetworkName": { // nom du réseau virtuel
             "value": "ScaleSetRG-vnet"
         },
-        "networkSecurityGroups": {
-            "value": [
-                {
-                    "name": "basicNsgScaleSetRG-vnet-nic01",
-                    "id": "/subscriptions/e81592a2-5b66-4be5-8e47-eb76c109ccf2/resourceGroups/ScaleSetRG/providers/Microsoft.Network/networkSecurityGroups/basicNsgScaleSetRG-vnet-nic01",
-                    "rules": [
-                        {
-                            "name": "Tcp",
-                            "properties": {
-                                "priority": 300,
-                                "protocol": "Tcp",
-                                "access": "Allow",
-                                "direction": "Inbound",
-                                "sourceAddressPrefix": "*",
-                                "sourcePortRange": "*",
-                                "destinationAddressPrefix": "*",
-                                "destinationPortRange": "80"
-                            }
-                        }
-                    ]
-                }
-            ]
+        "networkSecurityGroups": { // groupes de sécurité
+            "value": [{
+                "name": "basicNsgScaleSetRG-vnet-nic01",
+                // chemin de la ressource
+                "id": "/subscriptions/e81592a2-5b66-4be5-8e47-eb76c109ccf2/resourceGroups/ScaleSetRG/providers/Microsoft.Network/networkSecurityGroups/basicNsgScaleSetRG-vnet-nic01",
+                "rules": [{
+                    "name": "Tcp",
+                    "properties": {
+                        "priority": 300,
+                        "protocol": "Tcp",
+                        "access": "Allow",
+                        "direction": "Inbound",
+                        "sourceAddressPrefix": "*",
+                        "sourcePortRange": "*",
+                        "destinationAddressPrefix": "*",
+                        "destinationPortRange": "80"
+                    } // on ouvre l'accès au port 80 (HTTP) pour exposer le serveur web
+                }]
+            }]
         },
         "networkInterfaceConfigurations": {
-            "value": [
-                {
-                    "name": "ScaleSetRG-vnet-nic01",
-                    "primary": true,
-                    "subnetId": "/subscriptions/e81592a2-5b66-4be5-8e47-eb76c109ccf2/resourceGroups/ScaleSetRG/providers/Microsoft.Network/virtualNetworks/ScaleSetRG-vnet/subnets/default",
-                    "applicationGatewayBackendAddressPools": [],
-                    "loadBalancerBackendAddressPools": [
-                        {
-                            "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', parameters('loadBalancerName'), parameters('backendPoolName'))]"
-                        }
-                    ],
-                    "applicationSecurityGroups": [],
-                    "loadBalancerInboundNatPools": [],
-                    "enableAcceleratedNetworking": false,
-                    "nsgName": "basicNsgScaleSetRG-vnet-nic01",
-                    "nsgId": "/subscriptions/e81592a2-5b66-4be5-8e47-eb76c109ccf2/resourceGroups/ScaleSetRG/providers/Microsoft.Network/networkSecurityGroups/basicNsgScaleSetRG-vnet-nic01",
-                    "pipName": "publicIp-ScaleSetRG-vnet-nic01"
-                }
-            ]
+            "value": [{
+                "name": "ScaleSetRG-vnet-nic01",
+                "primary": true,
+                "subnetId": "/subscriptions/e81592a2-5b66-4be5-8e47-eb76c109ccf2/resourceGroups/ScaleSetRG/providers/Microsoft.Network/virtualNetworks/ScaleSetRG-vnet/subnets/default",
+                "applicationGatewayBackendAddressPools": [],
+                "loadBalancerBackendAddressPools": [{
+                    "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', parameters('loadBalancerName'), parameters('backendPoolName'))]"
+                }],
+                "applicationSecurityGroups": [],
+                "loadBalancerInboundNatPools": [],
+                "enableAcceleratedNetworking": false,
+                "nsgName": "basicNsgScaleSetRG-vnet-nic01",
+                "nsgId": "/subscriptions/e81592a2-5b66-4be5-8e47-eb76c109ccf2/resourceGroups/ScaleSetRG/providers/Microsoft.Network/networkSecurityGroups/basicNsgScaleSetRG-vnet-nic01",
+                "pipName": "publicIp-ScaleSetRG-vnet-nic01"
+            }]
         },
         "backendPoolName": {
             "value": "bepool"
