@@ -28,6 +28,21 @@ steps:
   - script: |
       echo $(CloudInitContent)
 
+  # déploiement du Resource Group contenant la KeyVault
+  - task: AzureResourceManagerTemplateDeployment@3
+    displayName: Déploiement de la KeyVault
+    inputs:
+      deploymentScope: "Resource Group" # déploiement à l'échelle d'un Resource Group
+      azureResourceManagerConnection: "Azure subscription 1(e81592a2-5b66-4be5-8e47-eb76c109ccf2)" # l'abonnement Azure d'Elias
+      subscriptionId: "e81592a2-5b66-4be5-8e47-eb76c109ccf2" # même chose
+      action: "Create Or Update Resource Group" # "créer ou mettre à jour un Resource Group"
+      resourceGroupName: "KeyVaultRG" # ce sera le Resource Group du Scale Set
+      location: "East US"
+      templateLocation: "Linked artifact"
+      csmFile: "$(System.DefaultWorkingDirectory)/AzureRessourceGroup1/KeyVault/azuredeploy.json" # chemin du template
+      csmParametersFile: "$(System.DefaultWorkingDirectory)/AzureRessourceGroup1/KeyVault/azuredeploy.parameters.json" # chemin des paramètres du template
+      deploymentMode: "Incremental" # déploiement incrémental
+
   # déploiement du Resource Group contenant le Linux Scale Set (VMSS)
   - task: AzureResourceManagerTemplateDeployment@3
     displayName: Déploiement du VMSS
@@ -39,12 +54,13 @@ steps:
       resourceGroupName: "ScaleSetRG" # ce sera le Resource Group du Scale Set
       location: "East US"
       templateLocation: "Linked artifact"
-      csmFile: "$(System.DefaultWorkingDirectory)/AzureRessourceGroup1/azuredeploy.json" # chemin du template
-      csmParametersFile: "$(System.DefaultWorkingDirectory)/AzureRessourceGroup1/azuredeploy.parameters.json" # chemin des paramètres du template
+      csmFile: "$(System.DefaultWorkingDirectory)/AzureRessourceGroup1/VMSS/azuredeploy.json" # chemin du template
+      csmParametersFile: "$(System.DefaultWorkingDirectory)/AzureRessourceGroup1/VMSS/azuredeploy.parameters.json" # chemin des paramètres du template
       overrideParameters: "-customData $(CloudInitContent) -adminPassword $(AdminPass)"
       deploymentMode: "Incremental" # déploiement incrémental
 
-  # déploiement du KeyVault et récupération du secret
+
+  # récupération du secret de la KeyVault
   - task: AzureKeyVault@2
     displayName: Récuperation le Secret
     inputs:
