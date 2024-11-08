@@ -41,7 +41,7 @@ steps:
       templateLocation: "Linked artifact"
       csmFile: "$(System.DefaultWorkingDirectory)/AzureRessourceGroup1/KeyVault/azuredeploy.json" # chemin du template
       csmParametersFile: "$(System.DefaultWorkingDirectory)/AzureRessourceGroup1/KeyVault/azuredeploy.parameters.json" # chemin des paramètres du template
-      overrideParameters: "-adminPassword $(AdminPass)"
+      overrideParameters: "-adminPassword $(AdminPass)" #Le mot de passe est stocké dans une variable de la pipeline pour ne pas apparaitre en "brut" dans cette dernière
       deploymentMode: "Incremental" # déploiement incrémental
 
   # déploiement du Resource Group contenant le Linux Scale Set (VMSS)
@@ -57,7 +57,7 @@ steps:
       templateLocation: "Linked artifact"
       csmFile: "$(System.DefaultWorkingDirectory)/AzureRessourceGroup1/VMSS/azuredeploy.json" # chemin du template
       csmParametersFile: "$(System.DefaultWorkingDirectory)/AzureRessourceGroup1/VMSS/azuredeploy.parameters.json" # chemin des paramètres du template
-      overrideParameters: "-customData $(CloudInitContent) -adminPassword $(AdminPass)"
+      overrideParameters: "-customData $(CloudInitContent) -adminPassword $(AdminPass)"  #Le mot de passe est stocké dans une variable de la pipeline pour ne pas apparaitre en "brut" dans cette dernière
       deploymentMode: "Incremental" # déploiement incrémental
 
   # récupération du secret de la KeyVault
