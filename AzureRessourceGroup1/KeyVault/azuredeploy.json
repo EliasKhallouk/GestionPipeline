@@ -1,7 +1,7 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
-    "parameters": {
+    "parameters": { // Définition du schéma des paramètres pour azuredeploy.parameters.json
         "vaults_keyvaultprojet6_name": {
             "defaultValue": "keyvaultprojet6",
             "type": "String"
@@ -12,7 +12,7 @@
     },
     "variables": {},
     "resources": [
-        {
+        { // la KeyVault
             "type": "Microsoft.KeyVault/vaults",
             "apiVersion": "2024-04-01-preview",
             "name": "[parameters('vaults_keyvaultprojet6_name')]",
@@ -35,12 +35,12 @@
                 "publicNetworkAccess": "Enabled"
             }
         },
-        {
+        { // le secret pour la KeyVault qui va contenir le Mot de passe de vmadmin
             "type": "Microsoft.KeyVault/vaults/secrets",
             "apiVersion": "2024-04-01-preview",
             "name": "[concat(parameters('vaults_keyvaultprojet6_name'), '/AdminPass')]",
             "location": "eastus",
-            "dependsOn": [
+            "dependsOn": [ // le secret dépend forcément de sa vault
                 "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_keyvaultprojet6_name'))]"
             ],
             "properties": {

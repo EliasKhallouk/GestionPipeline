@@ -3,13 +3,13 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "location": {
-            "value": "eastus"
+            "value": "eastus" //Région du VMSS et des Machines Virtuelles
         },
         "adminUsername": {
-            "value": "vmadmin"
+            "value": "vmadmin" // username de l'admin des machines virtuelles
         },
         "adminPassword": {
-            "value": null
+            "value": null // pas de mot de passe ici, cette valeur sera écrasée par le secret de la KeyVault
         },
         "customData": {
             "value": null
@@ -17,12 +17,12 @@
         "osDiskType": {
             "value": "StandardSSD_LRS"
         },
-        "addressPrefixes": {
+        "addressPrefixes": { // plage d'adresses du réseau virtuel
             "value": [
-                "10.0.0.0/16"
+                "10.0.0.0/16" 
             ]
         },
-        "subnets": {
+        "subnets": {// sous-domaines au cas où on veut rajouter des machines en réutilisant le même réseau
             "value": [
                 {
                     "name": "default",
@@ -32,13 +32,14 @@
                 }
             ]
         },
-        "virtualNetworkName": {
-            "value": "ScaleSetRG-vnet"
+        "virtualNetworkName": { 
+            "value": "ScaleSetRG-vnet" // nom du réseau virtuel
         },
-        "networkSecurityGroups": {
+        "networkSecurityGroups": {  // groupes de sécurité
             "value": [
                 {
                     "name": "basicNsgScaleSetRG-vnet-nic01",
+                    // chemin de la ressource
                     "id": "/subscriptions/e81592a2-5b66-4be5-8e47-eb76c109ccf2/resourceGroups/ScaleSetRG/providers/Microsoft.Network/networkSecurityGroups/basicNsgScaleSetRG-vnet-nic01",
                     "rules": [
                         {
@@ -52,7 +53,7 @@
                                 "sourcePortRange": "*",
                                 "destinationAddressPrefix": "*",
                                 "destinationPortRange": "80"
-                            }
+                            } // on ouvre l'accès au port 80 (HTTP) pour exposer le serveur web
                         }
                     ]
                 }
@@ -83,12 +84,12 @@
             "value": "bepool"
         },
         "loadBalancerName": {
-            "value": "LoadBalancer"
+            "value": "LoadBalancer" //nom du LoadBalancer
         },
-        "loadbalancingRuleFrontEndPort": {
+        "loadbalancingRuleFrontEndPort": { //Port d'entrée du load balancer
             "value": 80
         },
-        "loadbalancingRuleBackendEndPort": {
+        "loadbalancingRuleBackendEndPort": {//Port de sortie du load balancer
             "value": 80
         },
         "loadbalancingRuleProtocol": {
@@ -97,8 +98,8 @@
         "InboundNATRuleFrontEndPortRangeStart": {
             "value": 50000
         },
-        "virtualMachineScaleSetName": {
-            "value": "VMss1"
+        "virtualMachineScaleSetName": {//nom du VMSS
+            "value": "VMss1"    
         },
         "instanceCount": {
             "value": "2"
@@ -133,7 +134,7 @@
             "value": "http"
         },
         "healthExtensionPort": {
-            "value": 80
+            "value": 80 //port pour le HealthCheck
         },
         "healthExtensionRequestPath": {
             "value": "/"

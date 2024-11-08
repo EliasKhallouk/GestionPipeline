@@ -1,7 +1,7 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
-    "parameters": {
+    "parameters": { // Définition du schéma des paramètres pour azuredeploy.parameters.json
         "location": {
             "type": "String"
         },
@@ -96,7 +96,7 @@
             "type": "string"
         }
     },
-    "variables": {
+    "variables": { // variables utilisées plus loin
         "networkApiVersion": "2020-11-01",
         "virtualMachineScaleSetApiVersion": "2023-09-01",
         "namingInfix": "[toLower(substring(concat(parameters('virtualMachineScaleSetName'), uniqueString(resourceGroup().id)), 0, 9))]",
@@ -105,7 +105,7 @@
 
     },
     "resources": [
-        {
+        { // virtual network partagé par les ressources
             "name": "[parameters('virtualNetworkName')]",
             "type": "Microsoft.Network/virtualNetworks",
             "apiVersion": "2024-01-01",
@@ -117,7 +117,7 @@
                 "subnets": "[parameters('subnets')]"
             }
         },
-        {
+        { // groupe de sécurité
             "name": "[parameters('networkSecurityGroups')[copyIndex()].name]",
             "type": "Microsoft.Network/networkSecurityGroups",
             "apiVersion": "2020-05-01",
@@ -130,7 +130,7 @@
                 "count": "[length(parameters('networkSecurityGroups'))]"
             }
         },
-        {
+        { // IP publiques pour exposer notre serveur HTTP
             "name": "[concat(parameters('loadBalancerName'), '-publicip')]",
             "type": "Microsoft.Network/publicIpAddresses",
             "apiVersion": "2020-08-01",
@@ -145,7 +145,7 @@
             },
             "zones": []
         },
-        {
+        { // load balancer entre nos deux machines
             "name": "[parameters('loadBalancerName')]",
             "type": "Microsoft.Network/loadBalancers",
             "apiVersion": "2021-05-01",
@@ -228,7 +228,7 @@
                 "[concat('Microsoft.Network/publicIpAddresses/', concat(parameters('loadBalancerName'), '-publicip'))]"
             ]
         },
-        {
+        {  //Parametres de la personnalisation du scaling lors de la creation du VMSS
             "type": "Microsoft.Insights/autoscaleSettings",
             "apiVersion": "2021-05-01-preview",
             "name": "[variables('autoScaleResourceName')]",
@@ -290,12 +290,12 @@
                 ]
             }
         },
-        {
+        { // Configuration du VMSS
             "name": "[parameters('virtualMachineScaleSetName')]",
             "type": "Microsoft.Compute/virtualMachineScaleSets",
             "apiVersion": "[variables('virtualMachineScaleSetApiVersion')]",
             "location": "[parameters('location')]",
-            "dependsOn": [
+            "dependsOn": [ // il ne peut pas être construit sans son groupe de sécurité, son réseau virtuel et son load balancer
                 "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]",
                 "networkSecurityGroups",
                 "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]",
@@ -311,14 +311,14 @@
                                 "storageAccountType": "[parameters('osDiskType')]"
                             }
                         },
-                        "imageReference": {
+                        "imageReference": { // on utilise Ubuntu 24 LTS de Canonical
                             "publisher": "canonical",
                             "offer": "ubuntu-24_04-lts",
                             "sku": "server",
                             "version": "latest"
                         }
                     },
-                    "networkProfile": {
+                    "networkProfile": { // ce fichier de configuration permet de configurer automatiquement les interfaces réseau d'une machine virtuelle pour un ou plusieurs réseau(s) virtuel(s)
                         "networkApiVersion": "[variables('networkApiVersion')]",
                         "copy": [
                             {

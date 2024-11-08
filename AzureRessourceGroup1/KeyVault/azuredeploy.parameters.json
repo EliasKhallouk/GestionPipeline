@@ -3,10 +3,10 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "vaults_keyvaultprojet6_name": {
-            "value": null
+            "value": null // variable du nom de la keyvault
         },
                 "adminPassword": {
-            "value": null
+            "value": null // pas de mot de passe ici, cette valeur sera écrasée par le secret de la KeyVault
         }
     }
 }
