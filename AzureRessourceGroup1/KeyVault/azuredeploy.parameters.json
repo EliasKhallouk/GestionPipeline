@@ -2,7 +2,7 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "vaults_keyvaultprojet6_name": {
+        "vaults_keyvaultprojet7_name": {
             "value": null // variable du nom de la keyvault
         },
                 "adminPassword": {
